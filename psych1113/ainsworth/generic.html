@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<!--
+	Team Ainsworth
+    Part of the PSY1113 blog network at the University of Oklahoma.
+    psy1113.oucreate.com | johnstewart@ou.edu
+
+    Built using:
+    Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Team Ainsworth Blog Post</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+    </head>
+    <body class="is-preload">
+            <!-- Main -->
+                <div id="main">
+                    <div class="inner">
+
+                        <!-- Header -->
+                            <header id="header">
+                                <a href="index.html" class="logo">Team <strong>Ainsworth</strong></a>
+                            </header>
+
+                        <!-- Content -->
+                            <section>
+                                <header class="main">
+                                    <h1 id="title"></h1>
+                                </header>
+
+                                <span class="image main" id="featuredImage"></span>
+
+                                <div id="blogText"></div>
+
+                            </section>
+
+                    </div>
+                </div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+        <script>
+        $(function(){
+            var url_string = window.location.href;
+            var url = new URL(url_string);
+            var postID = url.searchParams.get("post");
+            console.log(postID);
+
+            var sheetUrl = 'https://spreadsheets.google.com/feeds/list/1Sc3yb2leeOFNCFGgMOB9aec0-GdDkmI7iuZob0pVzYk/2/public/values?alt=json'
+
+            // Invoke the ajax request first
+            var xhr = new XMLHttpRequest()
+            xhr.open('GET', sheetUrl)
+            xhr.onload = function () {       
+
+            var entries = JSON.parse(xhr.responseText)
+            entries = entries.feed.entry
+            console.log(entries)
+
+            var thisPost = [];
+            for (var i=0; i<entries.length; i++) {
+                if ( entries[i].gsx$postid.$t == postID ) {
+                    thisPost = entries[i];
+                    break;
+                }
+            }
+            $("#title").text(thisPost.gsx$title.$t);
+            $("#blogText").html(thisPost.gsx$text.$t);
+            $("#featuredImage").html('<img src="https://drive.google.com/uc?export=view&amp;id=' + thisPost.gsx$url.$t + '" alt="" />');
+            console.log(thisPost.gsx$title.$t);  
+
+            }
+            xhr.send();
+    });
+    </script>
+        
+        
+	</body>
+</html>
