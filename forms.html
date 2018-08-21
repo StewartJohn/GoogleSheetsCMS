@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_blank">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Post to the PSY1113 Blog</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+      select {
+        display:block!important;
+        margin: 0 0 15px 0;
+      }
+      /* label focus color */
+     .input-field input[type=text]:focus + label {
+       color: #993333;
+      }
+       /* label underline focus color */
+     .row .input-field input:focus {
+       border-bottom: 1px solid #993333 !important;
+       box-shadow: 0 1px 0 0 red !important
+     }
+     .btn {
+        background-color: #993333;
+      }
+      .btn:visited{
+        background-color: #8A2E2E;
+      }
+      .btn:hover {
+        background-color: #A34747;
+      }
+      .btn:active{
+        background-color: #A85151;
+      }
+      #editor-container {
+        height: 300px;
+        margin: 0 0 15px 0;
+      }
+    </style>
+  </head>
+  <body>
+  <div id="form-container" class="container">
+  <h2>Post to the PSY1113 Blog</h2>
+  <p>Please note that all fields, including the featured image file, must be filled out before you can submit the blog post.</p>
+  <form>
+      <div id="forminner">
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="first_name" type="text" class="validate" required="" aria-required="true">
+          <label for="first_name">First Name</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="last_name" type="text" class="validate" required="" aria-required="true">
+          <label for="last_name">Last Name</label>
+        </div>
+      </div>
+        <div class="row">
+        <div class="col s6">
+          <label>Which team are you in?</label>
+          <select id="house">
+            <option value="" disabled selected>Choose your option</option>
+            <option value="1">Team Ainsworth</option>
+            <option value="2">Team Gazzaniga</option>
+            <option value="3">Team Kohlberg</option>
+            <option value="4">Team Loftus</option>
+            <option value="5">Team Milgram</option>
+            <option value="6">Team Piaget</option>
+            <option value="7">Team Vygotsky</option>
+            <option value="8">Team Bandura</option>
+          </select>
+        </div>
+        <div class="col s6">
+          <label>Which assignment are you writing?</label>
+          <select id="assignment">
+            <option value="" disabled selected>Choose your option</option>
+            <option value="1">Assignment 1</option>
+            <option value="2">Assignment 2</option>
+          </select>
+        </div>
+        </div>
+    <div class="row">
+          <div class="file-field input-field col s12">
+          <div class="btn">
+            <span>Featured Image</span>
+            <input id="files" type="file">
+          </div>
+          <div class="file-path-wrapper">
+            <input class="file-path validate" type="text" placeholder="Select a file on your computer">
+          </div>
+        </div>
+        </div>
+      <div class="row">
+        <div class="input-field">
+          <label for="blog_title">Blog Title</label>
+          <input id="blog_title" type="text" class="validate" required="" aria-required="true">
+        </div>
+    <div class="form-group">
+      <label for="blog">Blog text</label>
+      <input name="blog" type="hidden">
+      <div id="editor-container">
+        <p>A robot who has developed sentience, and is the only robot of his kind shown to be still functioning on Earth.</p>
+      </div>
+    </div>
+    </div>
+    <div class="row form-group">
+      <button class="btn btn-primary" type="submit" onclick="submitForm(); return false;">Submit post</button>
+    </div>
+    <div class="row form-group">
+      <div class="input-field col s12" id = "progress">
+      </div>
+    </div>
+    </div>
+   <div id="success" style="display:none">
+      <h5 class="left-align teal-text">File Uploaded</h5>
+      <p>Your file has been successfully uploaded.</p>
+      </div>
+  </form>
+</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <script>
+
+      var quill = new Quill('#editor-container', {
+        modules: {
+          toolbar: [
+            ['bold', 'italic'],
+            ['link', 'blockquote', 'code-block'],
+            [{ list: 'ordered' }, { list: 'bullet' }]
+          ]
+        },
+        placeholder: 'Compose an epic...',
+        theme: 'snow'
+        });
+
+      var file,
+          reader = new FileReader();
+
+      reader.onloadend = function(e) {
+        if (e.target.error != null) {
+          showError("File " + file.name + " could not be read.");
+          return;
+        } else {
+          var firstName = $('#first_name').val();
+          var lastName = $('#last_name').val();
+          var blogTitle = $('#blog_title').val();
+          var blogText = quill.root.innerHTML;
+          console.log(blogText);
+          var house = $('#house').val();
+          var assignment = $('#assignment').val();
+          var assignmentText = $('#assignment').find(":selected").text();
+          google.script.run
+            .withSuccessHandler(showSuccess)
+            .uploadFileToGoogleDrive(e.target.result, file.name, firstName, lastName, blogTitle, blogText, house, assignment, assignmentText);
+        }
+      };
+
+      function showSuccess(e) {
+        if (e === "OK") {
+          $('#forminner').hide();
+          $('#success').show();
+        } else {
+          showError(e);
+        }
+      }
+
+      function submitForm() {
+
+        var files = $('#files')[0].files;
+        var firstName = $('#first_name').val();
+        var lastName = $('#last_name').val();
+        var blogTitle = $('#blog_title').val();
+        var house = $('#house').val();
+        var assignment = $('#assignment').find(":selected").text();
+
+        if (firstName.length === 0 || lastName.length === 0 || blogTitle.length === 0 || house.length === 0 || assignment.length === 0) {
+          showError("Please fill out form completely");
+          return;
+        }
+
+        if (files.length === 0) {
+          showError("Please select a file to upload");
+          return;
+        }
+
+        file = files[0];
+
+        if (file.size > 1024 * 1024 * 2) {
+          showError("The file size should be < 2 MB.");
+          return;
+        }
+
+        showMessage("Uploading file..");
+
+        reader.readAsDataURL(file);
+
+      }
+
+      function showError(e) {
+        $('#progress').addClass('red-text').html(e);
+      }
+
+      function showMessage(e) {
+        $('#progress').removeClass('red-text').html(e);
+      }
+
+    </script>
+
+  </body>
+
+</html>
