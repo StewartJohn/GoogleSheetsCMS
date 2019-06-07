@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<!--
+	Team Ainsworth
+    Part of the PSY1113 blog network at the University of Oklahoma.
+    psy1113.oucreate.com | johnstewart@ou.edu
+
+    Built using:
+    Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Team Ainsworth Blog Post</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+    </head>
+    <body class="is-preload">
+            <!-- Main -->
+                <div id="main">
+                    <div class="inner">
+
+                        <!-- Header -->
+                            <header id="header">
+                                <a href="index.html" class="logo">Team <strong>Ainsworth</strong></a>
+                            </header>
+
+                        <!-- Content -->
+                            <section>
+                                <header class="main">
+                                    <h1 id="title"></h1>
+                                    <p id="author"></p>
+                                </header>
+
+                                <span class="image main" id="featuredImage"> </span>
+
+                                <div id="blogText"></div>
+
+                            </section>
+
+                    </div>
+                </div>
+        
+        <div id="disqus_thread" style="width:80%; margin: auto"></div>
+
+		<!-- Scripts -->
+        
+        <script>
+
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        
+        var disqus_config = function () {
+        // this.page.url = PAGE_URL;  Replace PAGE_URL with your page's canonical URL variable
+        // this.page.identifier = PAGE_IDENTIFIER; Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://psychology1113.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+        <script src="../assets/js/jquery.min.js"></script>
+        <script src="../assets/js/browser.min.js"></script>
+        <script src="../assets/js/breakpoints.min.js"></script>
+        <script src="../assets/js/util.js"></script>
+        <script src="../assets/js/main.js"></script>
+
+        <script>
+        $(function(){
+            var url_string = window.location.href;
+            var url = new URL(url_string);
+            var postID = url.searchParams.get("post");
+            console.log(postID);
+
+            var sheetUrl = 'https://spreadsheets.google.com/feeds/list/1exPWWgKN9Bkg7zKG1vIf0OXgDtjEQHdbOXqfwmpzMa8/1/public/values?alt=json'
+
+            // Invoke the ajax request first
+            var xhr = new XMLHttpRequest()
+            xhr.open('GET', sheetUrl)
+            xhr.onload = function () {       
+
+            var entries = JSON.parse(xhr.responseText)
+            entries = entries.feed.entry
+            console.log(entries)
+
+            var thisPost = [];
+            for (var i=0; i<entries.length; i++) {
+                if ( entries[i].gsx$postid.$t == postID ) {
+                    thisPost = entries[i];
+                    break;
+                }
+            }
+            $("#title").text(thisPost.gsx$title.$t);
+            $("#author").html('<p>' + thisPost.gsx$firstname.$t + " " + thisPost.gsx$lastname.$t + '</br>' + thisPost.gsx$timestamp.$t + '</p>');
+            //$("#timestamp").text(thisPost.gsx$timestamp.$t);
+            $("#blogText").html(thisPost.gsx$text.$t);
+            $("#featuredImage").html('<img src="https://drive.google.com/uc?export=view&amp;id=' + thisPost.gsx$url.$t + '" alt="" />');
+            console.log(thisPost.gsx$title.$t);  
+
+            }
+            xhr.send();
+    });
+    </script>
+        
+    
+        
+        
+	</body>
+</html>
