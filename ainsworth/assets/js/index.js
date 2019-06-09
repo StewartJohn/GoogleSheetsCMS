@@ -10,16 +10,37 @@ $.each(data, function(index, value){
 return html;
 };
 
-var sheetUrl = 'https://spreadsheets.google.com/feeds/list/1exPWWgKN9Bkg7zKG1vIf0OXgDtjEQHdbOXqfwmpzMa8/1/public/values?alt=json'
+//get the sheetID from the yaml in the project's root directory
+var ymlconfig;
+var sheetID;
+read_config('../../../sheets.yaml'); // calling function
+console.log(ymlconfig["sheetID"][0]); // is empty
 
-// Invoke the ajax request first
+setTimeout(function() { // let's wait 2000 ms. hope it's enough to send the request and receive and read the response
+   sheetID = ymlconfig["sheetID"][0];
+   console.log(ymlconfig["sheetID"][0]); // TADA! It's read.
+   console.log(sheetID);
+}, 2000);
+
+function read_config(cfgfile) {
+   $.get({url: cfgfile, dataType: "text"})
+    .done(function (data) {
+       ymlconfig = jsyaml.load(data);
+   });
+};
+
+//pass the sheetID to the var sheetUrl
+//var sheetUrl = 'https://spreadsheets.google.com/feeds/list/' + sheetID + '/1/public/values?alt=json';
+var sheetUrl = 'https://spreadsheets.google.com/feeds/list/1exPWWgKN9Bkg7zKG1vIf0OXgDtjEQHdbOXqfwmpzMa8/1/public/values?alt=json';
+
+// Invoke the ajax request from the sheetID
 var xhr = new XMLHttpRequest()
 xhr.open('GET', sheetUrl)
-xhr.onload = function () {       
+xhr.onload = function () {
 
 var entries = JSON.parse(xhr.responseText);
 entries = entries.feed.entry;
-  
+
 //Create a list of the assignments from the entries
 var assignments = [];
     for (var i=0; i<entries.length; i++) {
@@ -30,7 +51,7 @@ var assignments = [];
     }
     console.log(assignments);
 
-//Add the assignments to the menu    
+//Add the assignments to the menu
 var cList = $('ul.myMenu')
 $.each(assignments, function(i)
 {
@@ -42,10 +63,10 @@ $.each(assignments, function(i)
         .text(assignments[i])
         .appendTo(li);
 });
-  
+
 //Reverse the entries order to put most recent posts first in the display
 entries = entries.reverse();
-  
+
 //Check for a search parameter filtering for a desired student or assignment & return the entries for just that student or assignment
 var url_string = window.location.href;
 var url = new URL(url_string);
@@ -65,8 +86,8 @@ if(studentRequest !== null){
     entries = newEntries;
 }
 
-  
-  // Once data has been loaded, then setup your paginataion instance and load 
+
+  // Once data has been loaded, then setup your paginataion instance and load
   // the entries into the paginataion plugin
   $('#pagination-container').pagination({
       dataSource: entries,
