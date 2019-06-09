@@ -14,7 +14,6 @@ return html;
 var ymlconfig;
 var sheetID;
 read_config('../../sheets.yaml'); // calling function
-console.log(ymlconfig["sheetID"][0]); // is empty
 
 setTimeout(function() { // let's wait 2000 ms. hope it's enough to send the request and receive and read the response
    sheetID = ymlconfig["sheetID"][0];
