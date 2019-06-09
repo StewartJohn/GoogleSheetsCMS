@@ -19,7 +19,7 @@ setTimeout(function() { // let's wait 2000 ms. hope it's enough to send the requ
    sheetID = ymlconfig["sheetID"][0];
    console.log(ymlconfig["sheetID"][0]); // TADA! It's read.
    console.log(sheetID);
-}, 2000);
+}, 3000);
 
 function read_config(cfgfile) {
    $.get({url: cfgfile, dataType: "text"})
