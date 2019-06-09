@@ -13,7 +13,7 @@ return html;
 //get the sheetID from the yaml in the project's root directory
 var ymlconfig;
 var sheetID;
-read_config('../../../sheets.yaml'); // calling function
+read_config('../../sheets.yaml'); // calling function
 console.log(ymlconfig["sheetID"][0]); // is empty
 
 setTimeout(function() { // let's wait 2000 ms. hope it's enough to send the request and receive and read the response
